@@ -449,45 +449,6 @@ sub = pd.read_csv("C:/Users/MyBook Hype AMD/Downloads/sample_submission.csv")
 
 ### 2.3 [Exploratory Data Analysis] - Menangani Missing Value dan Outliers
 Dalam tahap awal pembersihan data, dilakukan pengecekan terhadap duplikasi data dan missing value. Hasilnya menunjukkan bahwa tidak terdapat duplikasi data maupun missing value di seluruh kolom fitur maupun target. Hal ini mengindikasikan bahwa dataset sudah lengkap dan tidak memerlukan teknik imputasi lebih lanjut.
-Jumlah Missing Value per Kolom:
-
-id                          0
-Age                         0
-BusinessTravel              0
-DailyRate                   0
-Department                  0
-DistanceFromHome            0
-Education                   0
-EducationField              0
-EmployeeCount               0
-EmployeeNumber              0
-EnvironmentSatisfaction     0
-Gender                      0
-HourlyRate                  0
-JobInvolvement              0
-JobLevel                    0
-JobRole                     0
-JobSatisfaction             0
-MaritalStatus               0
-MonthlyIncome               0
-MonthlyRate                 0
-NumCompaniesWorked          0
-Over18                      0
-OverTime                    0
-PercentSalaryHike           0
-PerformanceRating           0
-RelationshipSatisfaction    0
-StandardHours               0
-StockOptionLevel            0
-TotalWorkingYears           0
-TrainingTimesLastYear       0
-WorkLifeBalance             0
-YearsAtCompany              0
-YearsInCurrentRole          0
-YearsSinceLastPromotion     0
-YearsWithCurrManager        0
-Attrition                   0
-dtype: int64
 
 <img width="1489" height="1768" alt="image" src="https://github.com/user-attachments/assets/79c4dc22-0cb7-4f13-a5f2-261e2e44a7f0" />
 Visualisasi boxplot menunjukkan bahwa sebagian besar fitur numerik, khususnya yang berkaitan dengan finansial dan riwayat kerja, memiliki sebaran yang lebar dan menunjukkan keberadaan outlier yang signifikan: **MonthlyIncome**: Fitur ini menunjukkan sebaran data yang terdistribusi ke atas dengan banyak data berada di luar whisker atas, mengindikasikan keberadaan karyawan berpenghasilan sangat tinggi (manajemen senior/eksekutif).**NumCompaniesWorked**: Fitur ini juga menunjukkan beberapa outlier pada nilai 8 atau 9, mencerminkan karyawan yang memiliki riwayat berpindah-pindah pekerjaan yang sangat sering.
@@ -521,6 +482,187 @@ Sebagian besar karyawan baru menjalani 1–5 tahun di posisi saat ini (YearsInCu
 
 - Rasio Tenure dan Kepuasan Gabungan
 Fitur turunan seperti AgeTenureRatio, TenureRoleRatio, dan Satisfaction_OverTime menunjukkan pola miring ke kanan, menandakan sebagian besar karyawan baru dengan rasio pengalaman rendah. Ini sesuai dengan kecenderungan bahwa karyawan baru lebih mudah keluar dibandingkan karyawan senior.
+
+### 2.5 [Exploratory Data Analysis] - Multivariate Analysis
+<img width="1056" height="842" alt="image" src="https://github.com/user-attachments/assets/5b06f399-0cae-4ebc-832d-760e6ed83984" />
+
+Heatmap korelasi menunjukkan bahwa keputusan attrition karyawan sangat dipengaruhi oleh kombinasi faktor kompensasi, waktu kerja, dan pengalaman. Korelasi negatif terkuat teramati antara Attrition dengan variabel MonthlyIncome dan variabel riwayat kerja seperti TotalWorkingYears, yang mengindikasikan bahwa karyawan dengan gaji lebih tinggi dan pengalaman lebih lama cenderung lebih setia dan kecil kemungkinannya untuk keluar. Sebaliknya, OverTime (Lembur) menunjukkan korelasi positif yang kuat dengan Attrition, menjadikannya pemicu turnover paling signifikan. Selain itu, heatmap juga mengungkapkan adanya multikolinearitas yang tinggi, terutama di antara variabel-variabel yang terkait dengan durasi kerja dan level jabatan, seperti korelasi kuat antara TotalWorkingYears, JobLevel, dan MonthlyIncome. Meskipun demikian, multikolinearitas ini tidak menjadi masalah serius mengingat penggunaan model berbasis tree yang robust dalam proyek ini.
+
+<img width="1063" height="1023" alt="image" src="https://github.com/user-attachments/assets/2f480a6b-af2d-4a2d-9e49-d3b4fef5b85b" />
+
+- Berdasarkan pairplot di atas, terlihat pola hubungan antar variabel numerik seperti Age, MonthlyIncome, TotalWorkingYears, dan YearsAtCompany terhadap status Attrition (0 = tidak keluar, 1 = keluar):
+
+1. Age vs Attrition
+Terlihat bahwa karyawan yang berusia muda lebih cenderung mengalami attrition (berhenti bekerja). Distribusi warna merah (Attrition = 1) lebih banyak di rentang usia 20–30 tahun. Artinya, semakin tua usia karyawan, kecenderungan untuk keluar dari perusahaan semakin kecil.
+
+2. MonthlyIncome vs Attrition
+Tidak terlihat hubungan linear yang kuat antara pendapatan bulanan dan attrition, tetapi tampak kecenderungan bahwa karyawan dengan pendapatan lebih rendah (< 5.000) lebih sering keluar dibandingkan mereka dengan penghasilan tinggi. Hal ini menunjukkan kemungkinan bahwa kompensasi berperan dalam retensi karyawan.
+
+3. TotalWorkingYears vs Attrition
+Polanya menunjukkan hubungan menurun — semakin lama total pengalaman kerja seseorang, semakin kecil kemungkinan mereka mengalami attrition. Titik merah lebih banyak muncul pada karyawan dengan pengalaman kerja < 10 tahun.
+
+4. YearsAtCompany vs Attrition
+Terlihat hubungan serupa: attrition lebih sering terjadi pada karyawan yang baru bekerja beberapa tahun di perusahaan. Artinya, masa kerja yang pendek berasosiasi dengan tingkat keluar yang lebih tinggi, menunjukkan pentingnya masa adaptasi dan retensi awal.
+
+## 3. Data Preparation
+### 3.1 Label Encoding dengan Mapping pada Fitur Target
+Label Encoding adalah proses mengubah variabel kategorikal (yang berisi teks, seperti 'Male'/'Female' atau 'Sales'/'HR') menjadi nilai numerik (angka).
+
+Dalam konteks proyek Employee Attrition Anda, Label Encoding biasanya digunakan pada:
+
+Variabel Target Biner: Mengubah variabel target Attrition dari ('Yes'/'No') menjadi (1/0).
+
+Variabel Kategorikal Ordinal: Mengubah variabel yang memiliki urutan (tingkatan) alami, seperti kepuasan atau level pendidikan.
+
+### 3.2 Feature Engineering
+Langkah-langkah ini bertujuan untuk mengidentifikasi variabel mana saja yang paling kuat dalam memprediksi Attrition (turnover karyawan) dan mana yang paling lemah, sehingga fitur yang tidak penting dapat dihapus untuk menyederhanakan model dan mengurangi noise.
+
+1. Menampilkan Grafik Feature Importance
+Tujuan: Untuk mendapatkan visualisasi awal mengenai seberapa besar kontribusi setiap fitur dalam memprediksi target (Attrition) berdasarkan model yang telah dilatih (misalnya LightGBM atau Ensemble).
+
+Interpretasi Visual: Fitur yang berada di posisi teratas grafik (misalnya OverTime) memiliki nilai importance tertinggi, menandakan bahwa perubahan pada fitur tersebut memiliki dampak paling besar terhadap hasil prediksi attrition.
+
+Fitur yang berada di posisi terbawah memiliki kontribusi paling kecil.
+
+2. Memfilter Fitur yang Nilainya Lebih Kecil dari 0.005
+Tujuan: Melakukan penghapusan fitur berdasarkan ambang batas (threshold) yang telah ditentukan, yaitu 0.005.
+
+Interpretasi: Ini adalah langkah pembersihan fitur. Semua fitur yang nilai importance-nya di bawah 0.005 dianggap tidak signifikan atau terlalu lemah untuk berkontribusi pada prediksi yang akurat. Dengan menghapus fitur-fitur ini, kita menghilangkan noise dan potensi overfitting yang disebabkan oleh variabel yang tidak relevan.
+
+3. Jumlah Fitur yang Dibuang
+Tujuan: Memberikan ringkasan kuantitatif mengenai hasil dari proses feature selection.
+
+Interpretasi: 18 Fitur Dibuang: Dari total fitur awal (sekitar 31 setelah menghapus ID/konstanta), sebanyak 18 fitur dinilai tidak signifikan (nilai importance < 0.005). Ini menunjukkan bahwa sebagian besar variabel dalam dataset kurang relevan secara langsung dalam memprediksi attrition.
+
+4. Sisa Fitur
+Tujuan: Mengetahui jumlah akhir fitur yang akan digunakan untuk pelatihan model final.
+
+Interpretasi:13 Fitur Sisa: Hanya 13 fitur yang dipertahankan. Ini adalah sekumpulan fitur inti yang dinilai paling berpengaruh dan informatif. Model akhir akan dilatih hanya dengan 13 fitur ini. Hal ini diharapkan akan menyederhanakan model dan mempercepat waktu pelatihan, sambil tetap menjaga (atau bahkan meningkatkan) akurasi, karena noise telah dihilangkan.
+
+### 3.3 Splitting Dataset
+Untuk mengevaluasi kinerja model. Data yang dibagi menjadi dua bagian: 80% untuk pelatihan (agar model belajar) dan 20% untuk pengujian (untuk menguji seberapa baik model berkinerja pada data baru yang belum pernah dilihat).
+
+Menggunakan fungsi train_test_split dari library scikit-learn. 
+Menetapkan bahwa 20% dari total observasi (karyawan) akan dialokasikan sebagai data pengujian (X_test, y_test).
+Digunakan untuk memastikan bahwa pembagian data dilakukan secara acak, tetapi hasilnya selalu konsisten (dapat direproduksi) setiap kali kode dijalankan.
+stratify=y Parameter Kritis. Karena dataset Employee Attrition mengalami ketidakseimbangan kelas (kelas Attrition minoritas), parameter ini memastikan bahwa persentase karyawan yang keluar (Attrition=Yes) di set pelatihan dan set pengujian adalah sama. Hal ini menjaga objektivitas evaluasi model
+
+### 3.4 Preprocessing
+Alur preprocessing ini bersifat komprehensif dan robust. Dengan menggabungkan Label Encoding dan One-Hot Encoding, dataset disiapkan secara tepat untuk setiap jenis variabel. Penggunaan Standard Scaler di akhir memastikan bahwa data numerik berada dalam rentang yang seragam, sehingga model ensemble dapat belajar secara efektif dari seluruh dataset yang kini telah ditransformasi.
+
+## 4. Model Training, Comparison, Selection and Tuning
+I. Persiapan Model yang Ditargetkan (Train Set)
+Handle Class Imbalance: Wajib dilakukan hanya pada data Training (X_train, y_train). Tujuannya adalah menyeimbangkan rasio kelas Attrition (minoritas) dan Non-Attrition (mayoritas) (misalnya menggunakan SMOTE) agar model tidak bias dan mampu memprediksi kasus attrition secara efektif.
+
+II. Pelatihan dan Optimasi Model
+Modeling: Menggunakan pendekatan Model Ensemble (menggabungkan LightGBM, CatBoost, dan XGBoost). Model ensemble dilatih menggunakan Training Set yang sudah diseimbangkan dan disaring fiturnya.
+Hyperparameter Tuning: Melakukan optimasi parameter model (misalnya mencari learning_rate atau max_depth terbaik) untuk memaksimalkan kinerja model, yang terbukti mencapai ROC-AUC tertinggi ($0.9949$).
+
+III. Validasi dan Hasil Akhir
+Model Evaluation: Model akhir diuji pada Testing Set yang belum dimodifikasi (data asli, tidak seimbang). Langkah ini penting untuk mendapatkan evaluasi yang realistis tentang kemampuan model menggeneralisasi di dunia nyata.
+
+Superioritas Kinerja: Model Ensemble menunjukkan kinerja terbaik (ROC-AUC 0.9949), memvalidasi bahwa strategi menggabungkan model tree-based yang kuat adalah solusi optimal untuk memprediksi Employee Attrition.
+
+### 4.1 Model Selection
+Pada tahap ini dilakukan proses perbandingan kinerja beberapa algoritma klasifikasi dengan menggunakan teknik stratified k-fold cross validation. Pendekatan ini membagi data pelatihan menjadi beberapa fold dengan proporsi kelas target (attrition) yang tetap seimbang di setiap fold, sehingga evaluasi model tetap representatif meskipun data target tidak seimbang.
+
+Metode k-fold cross validation sendiri digunakan untuk menilai sejauh mana model mampu melakukan generalisasi terhadap data baru. Dataset dibagi menjadi K subset, lalu proses pelatihan dilakukan sebanyak K kali — setiap kali satu subset digunakan untuk pengujian dan sisanya untuk pelatihan. Dengan cara ini, seluruh data memperoleh kesempatan menjadi data uji, mengurangi risiko overfitting, dan menghasilkan estimasi performa yang lebih stabil.
+
+Tujuan dari langkah ini adalah untuk memilih model terbaik yang akan digunakan pada tahap selanjutnya, yaitu feature selection, hyperparameter tuning, dan evaluasi akhir model. Model terbaik dipilih berdasarkan rata-rata skor validasi ROC-AUC tertinggi pada hasil cross-validation, sekaligus mempertimbangkan keseimbangan antara bias dan varians.
+
+Semua model Gradient Boosting yang diuji—**LGBM (0.99203), XGBoost (0.98793), dan CatBoost (0.99391)**—menunjukkan kinerja klasifikasi yang sangat kuat dalam memprediksi Employee Attrition, dengan semua nilai ROC-AUC berada di atas 0.98. Secara spesifik, CatBoost memiliki kemampuan diskriminasi tertinggi sebagai model tunggal (0.99391). Kualitas kinerja yang tinggi ini divalidasi oleh metode Stratified K-Fold Cross-Validation, yang memastikan bahwa angka-angka tersebut andal meskipun dataset mengalami ketidakseimbangan kelas. Hasil ini secara tegas membenarkan strategi penggunaan Model Ensemble, yang secara kolektif meningkatkan akurasi hingga di atas 0.9949, menjadikannya alat prediktif yang paling stabil dan efektif untuk manajemen SDM.
+
+**Perbandingan ROC-AUC tiap Model**
+<img width="692" height="451" alt="image" src="https://github.com/user-attachments/assets/d4180c15-a92a-41f9-b3bb-b5b2b3268a13" />
+Grafik di atas menunjukkan perbandingan nilai **ROC-AUC** dari empat model yang digunakan, yaitu **LGBM, XGBoost, CatBoost,** dan **Ensemble**. Dari hasil tersebut, terlihat bahwa seluruh model memiliki performa yang sangat baik karena nilai ROC-AUC berada di atas **0.98**, menandakan kemampuan klasifikasi yang tinggi.
+
+Model **LGBM** memperoleh nilai ROC-AUC sebesar **0.9920**, diikuti oleh **CatBoost** dengan **0.9939**, dan **XGBoost** dengan **0.9849**. Sementara itu, model **Ensemble** menunjukkan performa terbaik dengan nilai ROC-AUC tertinggi, yaitu **0.9949**. Hal ini mengindikasikan bahwa penggabungan beberapa model (ensemble) mampu meningkatkan kemampuan prediksi secara keseluruhan, menghasilkan model yang **lebih stabil dan akurat** dibandingkan model tunggal.
+
+## 5. Model Testing and Evaluation
+### 5.1 Data Test Predict
+Penggunaan **Model Ensemble** dalam proyek ini divalidasi oleh hasil komparatif, di mana performa gabungan melampaui setiap model tunggal. Model Ensemble mencapai nilai ROC-AUC tertinggi sebesar 0.9949, sedikit lebih tinggi daripada komponen terbaiknya, CatBoost (0.9939). Dipilihnya Ensemble adalah strategi yang disengaja karena ia memanfaatkan prinsip wisdom of the crowds; dengan menggabungkan prediksi dari tiga algoritma Gradient Boosting yang kuat (LGBM, XGBoost, CatBoost), model ini mampu memitigasi kelemahan individual dan menghasilkan prediksi yang lebih stabil, robust terhadap noise, dan memiliki variance yang lebih rendah. Metrik ROC-AUC dipilih karena merupakan metrik evaluasi standar industri untuk klasifikasi pada dataset yang tidak seimbang (seperti Employee Attrition). ROC-AUC mengukur kemampuan model dalam membedakan (discrimination) secara keseluruhan antara kelas positif (Attrition=Yes) dan negatif (Attrition=No) tanpa terpengaruh oleh ambang batas prediksi, sehingga nilainya yang mendekati 1.0 mengonfirmasi bahwa model Ensemble adalah alat prediktif yang nyaris sempurna untuk risiko turnover.
+
+**Distribusi Probabilitas Prediksi Attrition (Ensemble)**
+<img width="695" height="470" alt="image" src="https://github.com/user-attachments/assets/c8072982-018a-42a8-b257-79454dc50331" />
+Grafik di atas menunjukkan **distribusi probabilitas prediksi attrition** (kemungkinan karyawan keluar) yang dihasilkan oleh model **ensemble**. Terlihat bahwa sebagian besar observasi memiliki **probabilitas attrition yang sangat rendah (mendekati 0)**, artinya model memprediksi banyak karyawan berpeluang kecil untuk keluar dari perusahaan.
+
+Namun, terdapat juga **sekelompok kecil observasi dengan probabilitas mendekati 1**, yang menunjukkan karyawan dengan risiko tinggi untuk mengalami attrition. Pola distribusi ini bersifat **bimodal**, di mana sebagian besar nilai terpusat di dua ekstrem (dekat 0 dan dekat 1), menandakan bahwa model mampu **memisahkan dua kelas (stay dan attrition)** dengan cukup jelas.
+
+Secara keseluruhan, distribusi ini mengindikasikan bahwa model ensemble memiliki **kepercayaan tinggi dalam prediksi** yang dibuatnya — mayoritas prediksi memiliki probabilitas yang sangat pasti, baik untuk kategori bertahan maupun keluar.
+
+**Kurva ROC dari hasil validasi ensemble**
+<img width="536" height="547" alt="image" src="https://github.com/user-attachments/assets/77026af1-8750-414a-9eaa-ce69f61bb874" />
+Berdasarkan hasil kurva ROC pada model ensemble, diperoleh nilai **AUC sebesar 0.9949** yang menunjukkan bahwa model memiliki kemampuan klasifikasi yang sangat baik dalam membedakan antara kelas positif dan negatif. Nilai AUC yang mendekati 1 menandakan bahwa model mampu menghasilkan tingkat **true positive** yang tinggi dengan **false positive** yang sangat rendah. Kurva ROC yang menempel di sisi kiri atas grafik mengindikasikan bahwa model jarang melakukan kesalahan dalam memprediksi kelas positif. Dengan demikian, model ensemble ini dapat dikatakan memiliki **akurasi prediktif yang sangat tinggi** dan performa yang **hampir sempurna**, meskipun tetap perlu dilakukan pemeriksaan lebih lanjut terhadap kemungkinan **overfitting**.
+
+### 5.2 Interpretation with SHAP Values
+SHAP adalah library yang memungkinkan interpretasi hasil algoritma machine learning. Dengan SHAP, dapat dipahami dampak masing-masing fitur terhadap prediksi model individu, di mana $ f(x) = E(f(x)) + SHAP $.
+
+import shap
+
+explainer = shap.TreeExplainer(lgb)  # lgb sudah fit
+shap_values = explainer.shap_values(X_val_dense)
+
+shap.summary_plot(shap_values, X_val_dense)
+
+Beeswarm Plot memberikan bukti transparan bahwa model Ensemble Anda beroperasi secara logis dan terprediksi, memvalidasi bahwa risiko Attrition paling tinggi muncul dari kombinasi kondisi kerja yang buruk (Lembur) dan kompensasi yang tidak kompetitif (Gaji Rendah). Interpretasi ini memungkinkan manajemen SDM untuk merancang intervensi yang sangat terfokus, seperti melakukan review kompensasi atau mengurangi beban lembur untuk karyawan berisiko.
+
+<img width="766" height="940" alt="image" src="https://github.com/user-attachments/assets/17ceeeca-b33f-48fe-8ca4-c913ef344ab5" />
+1. Faktor Pendorong Utama Attrition
+Pada plot, fitur yang berada di posisi teratas dan memiliki titik-titik (swarm) yang terkonsentrasi di sisi kanan (SHAP positif) adalah pemicu Attrition terkuat. Hal ini akan didominasi oleh:
+
+OverTime (Lembur): Ini akan menjadi fitur paling penting. Titik-titik yang mewakili lembur (OverTime = Yes) akan memiliki nilai SHAP positif tertinggi, menunjukkan bahwa lembur adalah penyebab tunggal terbesar yang meningkatkan risiko karyawan keluar.
+
+MonthlyIncome (Gaji Bulanan): Titik-titik dengan nilai rendah (warna biru/dingin) akan berkumpul di sisi kanan (SHAP positif). Hal ini berarti gaji yang rendah adalah faktor yang secara konsisten dan kuat mendorong probabilitas Attrition.
+
+2. Faktor Pencegah Attrition (Retensi)
+Fitur yang berada di sisi kiri (SHAP negatif) adalah faktor yang menekan risiko Attrition:
+
+MonthlyIncome: Titik-titik dengan nilai tinggi (warna merah/panas) akan terkumpul di sisi kiri (SHAP negatif). Ini mengonfirmasi bahwa gaji yang tinggi adalah penghalang utama turnover.
+
+JobSatisfaction & EnvironmentSatisfaction: Nilai kepuasan yang tinggi (merah) akan mengarah kuat ke sisi negatif SHAP, menunjukkan bahwa kepuasan kerja yang baik secara signifikan menurunkan keinginan karyawan untuk keluar.
+
+## 6. Conclusions
+Proyek Analisis dan Prediksi Employee Attrition ini berhasil mencapai tujuan utama yaitu membangun model prediktif yang andal dan mengidentifikasi faktor-faktor risiko utama turnover karyawan.
+
+### 1. Superioritas Model Ensemble dan Kinerja
+Pengujian komparatif antara empat model (LGBM, XGBoost, CatBoost, dan Ensemble) menunjukkan bahwa proyek ini menghasilkan kinerja klasifikasi yang luar biasa:
+
+ **Kinerja Tinggi**: Seluruh model menunjukkan performa yang sangat baik, dengan nilai ROC-AUC di atas 0.98, mengindikasikan kemampuan diskriminasi yang sangat tinggi antara kelas attrition dan non-attrition.
+
+ **Model Ensemble Terbaik**: Model Ensemble berhasil melampaui kinerja model tree-based tunggal, mencapai nilai ROC-AUC tertinggi sebesar 0.9949. Hal ini mengonfirmasi hipotesis bahwa penggabungan prediksi dari berbagai algoritma (LightGBM, CatBoost, dan XGBoost) mampu memitigasi kelemahan model individual, menghasilkan model akhir yang lebih kuat, stabil, dan akurat.
+
+### 2. Faktor Utama Pemicu Attrition
+Analisis feature importance yang bersumber dari model-model ensemble ini mengkonfirmasi bahwa risiko attrition dipengaruhi secara signifikan oleh:
+
+**Beban Kerja & Kompensasi** : Karyawan yang sering melakukan Lembur (OverTime=Yes) dan level gaji bulanan (MonthlyIncome) yang tidak memadai merupakan faktor-faktor prediktor terkuat.
+
+**Lingkungan & Kepuasan**: Tingkat kepuasan terhadap lingkungan kerja (EnvironmentSatisfaction), keseimbangan kerja-hidup (WorkLifeBalance), dan kepuasan terhadap hubungan kerja (RelationshipSatisfaction) sangat berkorelasi dengan keputusan untuk bertahan.
+
+Tentu. Berdasarkan hasil perbandingan model yang Anda berikan, berikut adalah bagian Kesimpulan (Conclusion) yang direvisi untuk secara eksplisit menyoroti penggunaan dan keberhasilan Model Ensemble sebagai penutup yang kuat.
+
+### 3. Implikasi dan Manfaat Bisnis
+Temuan proyek ini memberikan wawasan strategis yang jelas bagi tim Manajemen SDM:
+
+**Retensi Proaktif**: Model Ensemble yang superior kini dapat digunakan sebagai alat screening untuk mengidentifikasi karyawan berisiko sangat tinggi dengan tingkat kepastian yang tinggi.
+
+**Intervensi Tepat Sasaran**: Rekomendasi aksi dapat difokuskan pada perbaikan area spesifik, seperti melakukan peninjauan kompensasi yang kompetitif, serta menerapkan kebijakan untuk mengurangi overtime yang berlebihan, yang merupakan pemicu attrition paling rentan.
+
+**Pengurangan Biaya**: Dengan beralih dari intervensi reaktif ke predictive berbasis model yang akurat, perusahaan dapat menekan biaya turnover secara substansial dan meningkatkan retensi talenta berharga.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

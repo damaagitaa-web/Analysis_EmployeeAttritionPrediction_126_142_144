@@ -7,6 +7,7 @@
 ---
 
 ## **Domain Proyek: Sumber Daya Manusia (SDM)**
+<img width="731" height="403" alt="Tangkapan Layar 2025-10-26 pukul 23 33 54" src="https://github.com/user-attachments/assets/796c4d8c-8593-42b5-b23d-883da1303656" />
 
 ## 1. Business Understanding
 

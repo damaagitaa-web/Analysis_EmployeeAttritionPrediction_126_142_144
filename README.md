@@ -1,8 +1,8 @@
 # Analisis Prediksi Turnover Karyawan (Employee Attrition Prediction)
 
-### Gita Damayanti  - 5003231142
-### Syahla Kemal. D - 5003231144
-### Nindya Eka P.R  - 5003231126
+#### Gita Damayanti  - 5003231142
+#### Nindya Eka P.R  - 5003231126
+#### Syahla Kemal. D - 5003231144
 
 ---
 

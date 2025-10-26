@@ -116,7 +116,6 @@ Di antara seluruh karyawan, sekitar **16% hingga 20%** diasumsikan termasuk dala
 
 ### 2.1 Data Loading
 # Import Library
-# ==============================
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -137,9 +136,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Load Data
-train = pd.read_csv("C:/Users/MyBook Hype AMD/Downloads/train.csv")
-test = pd.read_csv("C:/Users/MyBook Hype AMD/Downloads/test.csv")
-sub = pd.read_csv("C:/Users/MyBook Hype AMD/Downloads/sample_submission.csv")
+train.csv
+test.csv
 
 ### 2.2 [Exploratory Data Analysis] - Deskripsi Variabel
 
@@ -452,6 +450,7 @@ sub = pd.read_csv("C:/Users/MyBook Hype AMD/Downloads/sample_submission.csv")
 Dalam tahap awal pembersihan data, dilakukan pengecekan terhadap duplikasi data dan missing value. Hasilnya menunjukkan bahwa tidak terdapat duplikasi data maupun missing value di seluruh kolom fitur maupun target. Hal ini mengindikasikan bahwa dataset sudah lengkap dan tidak memerlukan teknik imputasi lebih lanjut.
 
 <img width="1489" height="1768" alt="image" src="https://github.com/user-attachments/assets/79c4dc22-0cb7-4f13-a5f2-261e2e44a7f0" />
+
 Visualisasi boxplot menunjukkan bahwa sebagian besar fitur numerik, khususnya yang berkaitan dengan finansial dan riwayat kerja, memiliki sebaran yang lebar dan menunjukkan keberadaan outlier yang signifikan: **MonthlyIncome**: Fitur ini menunjukkan sebaran data yang terdistribusi ke atas dengan banyak data berada di luar whisker atas, mengindikasikan keberadaan karyawan berpenghasilan sangat tinggi (manajemen senior/eksekutif).**NumCompaniesWorked**: Fitur ini juga menunjukkan beberapa outlier pada nilai 8 atau 9, mencerminkan karyawan yang memiliki riwayat berpindah-pindah pekerjaan yang sangat sering.
 
 Meskipun terdapat outlier pada fitur-fitur penting seperti MonthlyIncome dan riwayat kerja, outlier tersebut tidak dihapus dari dataset. Hal ini dilakukan untuk menjaga keutuhan informasi dan realitas data bisnis, mengingat data pencilan tersebut mencerminkan kondisi nyata, seperti level kompensasi yang tinggi di tingkat eksekutif.
@@ -574,7 +573,9 @@ Tujuan dari langkah ini adalah untuk memilih model terbaik yang akan digunakan p
 Semua model Gradient Boosting yang diuji—**LGBM (0.99203), XGBoost (0.98793), dan CatBoost (0.99391)**—menunjukkan kinerja klasifikasi yang sangat kuat dalam memprediksi Employee Attrition, dengan semua nilai ROC-AUC berada di atas 0.98. Secara spesifik, CatBoost memiliki kemampuan diskriminasi tertinggi sebagai model tunggal (0.99391). Kualitas kinerja yang tinggi ini divalidasi oleh metode Stratified K-Fold Cross-Validation, yang memastikan bahwa angka-angka tersebut andal meskipun dataset mengalami ketidakseimbangan kelas. Hasil ini secara tegas membenarkan strategi penggunaan Model Ensemble, yang secara kolektif meningkatkan akurasi hingga di atas 0.9949, menjadikannya alat prediktif yang paling stabil dan efektif untuk manajemen SDM.
 
 **Perbandingan ROC-AUC tiap Model**
+
 <img width="692" height="451" alt="image" src="https://github.com/user-attachments/assets/d4180c15-a92a-41f9-b3bb-b5b2b3268a13" />
+
 Grafik di atas menunjukkan perbandingan nilai **ROC-AUC** dari empat model yang digunakan, yaitu **LGBM, XGBoost, CatBoost,** dan **Ensemble**. Dari hasil tersebut, terlihat bahwa seluruh model memiliki performa yang sangat baik karena nilai ROC-AUC berada di atas **0.98**, menandakan kemampuan klasifikasi yang tinggi.
 
 Model **LGBM** memperoleh nilai ROC-AUC sebesar **0.9920**, diikuti oleh **CatBoost** dengan **0.9939**, dan **XGBoost** dengan **0.9849**. Sementara itu, model **Ensemble** menunjukkan performa terbaik dengan nilai ROC-AUC tertinggi, yaitu **0.9949**. Hal ini mengindikasikan bahwa penggabungan beberapa model (ensemble) mampu meningkatkan kemampuan prediksi secara keseluruhan, menghasilkan model yang **lebih stabil dan akurat** dibandingkan model tunggal.
@@ -584,7 +585,9 @@ Model **LGBM** memperoleh nilai ROC-AUC sebesar **0.9920**, diikuti oleh **CatBo
 Penggunaan **Model Ensemble** dalam proyek ini divalidasi oleh hasil komparatif, di mana performa gabungan melampaui setiap model tunggal. Model Ensemble mencapai nilai ROC-AUC tertinggi sebesar 0.9949, sedikit lebih tinggi daripada komponen terbaiknya, CatBoost (0.9939). Dipilihnya Ensemble adalah strategi yang disengaja karena ia memanfaatkan prinsip wisdom of the crowds; dengan menggabungkan prediksi dari tiga algoritma Gradient Boosting yang kuat (LGBM, XGBoost, CatBoost), model ini mampu memitigasi kelemahan individual dan menghasilkan prediksi yang lebih stabil, robust terhadap noise, dan memiliki variance yang lebih rendah. Metrik ROC-AUC dipilih karena merupakan metrik evaluasi standar industri untuk klasifikasi pada dataset yang tidak seimbang (seperti Employee Attrition). ROC-AUC mengukur kemampuan model dalam membedakan (discrimination) secara keseluruhan antara kelas positif (Attrition=Yes) dan negatif (Attrition=No) tanpa terpengaruh oleh ambang batas prediksi, sehingga nilainya yang mendekati 1.0 mengonfirmasi bahwa model Ensemble adalah alat prediktif yang nyaris sempurna untuk risiko turnover.
 
 **Distribusi Probabilitas Prediksi Attrition (Ensemble)**
+
 <img width="695" height="470" alt="image" src="https://github.com/user-attachments/assets/c8072982-018a-42a8-b257-79454dc50331" />
+
 Grafik di atas menunjukkan **distribusi probabilitas prediksi attrition** (kemungkinan karyawan keluar) yang dihasilkan oleh model **ensemble**. Terlihat bahwa sebagian besar observasi memiliki **probabilitas attrition yang sangat rendah (mendekati 0)**, artinya model memprediksi banyak karyawan berpeluang kecil untuk keluar dari perusahaan.
 
 Namun, terdapat juga **sekelompok kecil observasi dengan probabilitas mendekati 1**, yang menunjukkan karyawan dengan risiko tinggi untuk mengalami attrition. Pola distribusi ini bersifat **bimodal**, di mana sebagian besar nilai terpusat di dua ekstrem (dekat 0 dan dekat 1), menandakan bahwa model mampu **memisahkan dua kelas (stay dan attrition)** dengan cukup jelas.
@@ -592,7 +595,9 @@ Namun, terdapat juga **sekelompok kecil observasi dengan probabilitas mendekati 
 Secara keseluruhan, distribusi ini mengindikasikan bahwa model ensemble memiliki **kepercayaan tinggi dalam prediksi** yang dibuatnya — mayoritas prediksi memiliki probabilitas yang sangat pasti, baik untuk kategori bertahan maupun keluar.
 
 **Kurva ROC dari hasil validasi ensemble**
+
 <img width="536" height="547" alt="image" src="https://github.com/user-attachments/assets/77026af1-8750-414a-9eaa-ce69f61bb874" />
+
 Berdasarkan hasil kurva ROC pada model ensemble, diperoleh nilai **AUC sebesar 0.9949** yang menunjukkan bahwa model memiliki kemampuan klasifikasi yang sangat baik dalam membedakan antara kelas positif dan negatif. Nilai AUC yang mendekati 1 menandakan bahwa model mampu menghasilkan tingkat **true positive** yang tinggi dengan **false positive** yang sangat rendah. Kurva ROC yang menempel di sisi kiri atas grafik mengindikasikan bahwa model jarang melakukan kesalahan dalam memprediksi kelas positif. Dengan demikian, model ensemble ini dapat dikatakan memiliki **akurasi prediktif yang sangat tinggi** dan performa yang **hampir sempurna**, meskipun tetap perlu dilakukan pemeriksaan lebih lanjut terhadap kemungkinan **overfitting**.
 
 ### 5.2 Interpretation with SHAP Values
@@ -608,6 +613,7 @@ shap.summary_plot(shap_values, X_val_dense)
 Beeswarm Plot memberikan bukti transparan bahwa model Ensemble Anda beroperasi secara logis dan terprediksi, memvalidasi bahwa risiko Attrition paling tinggi muncul dari kombinasi kondisi kerja yang buruk (Lembur) dan kompensasi yang tidak kompetitif (Gaji Rendah). Interpretasi ini memungkinkan manajemen SDM untuk merancang intervensi yang sangat terfokus, seperti melakukan review kompensasi atau mengurangi beban lembur untuk karyawan berisiko.
 
 <img width="766" height="940" alt="image" src="https://github.com/user-attachments/assets/17ceeeca-b33f-48fe-8ca4-c913ef344ab5" />
+
 1. Faktor Pendorong Utama Attrition
 Pada plot, fitur yang berada di posisi teratas dan memiliki titik-titik (swarm) yang terkonsentrasi di sisi kanan (SHAP positif) adalah pemicu Attrition terkuat. Hal ini akan didominasi oleh:
 

@@ -141,20 +141,7 @@ test = pd.read_csv("C:/Users/MyBook Hype AMD/Downloads/test.csv")
 sub = pd.read_csv("C:/Users/MyBook Hype AMD/Downloads/sample_submission.csv")
 
 ### 2.2 [Exploratory Data Analysis] - Deskripsi Variabel
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -459,6 +446,124 @@ sub = pd.read_csv("C:/Users/MyBook Hype AMD/Downloads/sample_submission.csv")
   </tbody>
 </table>
 </div>
+
+### 2.3 [Exploratory Data Analysis] - Menangani Missing Value dan Outliers
+Dalam tahap awal pembersihan data, dilakukan pengecekan terhadap duplikasi data dan missing value. Hasilnya menunjukkan bahwa tidak terdapat duplikasi data maupun missing value di seluruh kolom fitur maupun target. Hal ini mengindikasikan bahwa dataset sudah lengkap dan tidak memerlukan teknik imputasi lebih lanjut.
+Jumlah Missing Value per Kolom:
+
+id                          0
+Age                         0
+BusinessTravel              0
+DailyRate                   0
+Department                  0
+DistanceFromHome            0
+Education                   0
+EducationField              0
+EmployeeCount               0
+EmployeeNumber              0
+EnvironmentSatisfaction     0
+Gender                      0
+HourlyRate                  0
+JobInvolvement              0
+JobLevel                    0
+JobRole                     0
+JobSatisfaction             0
+MaritalStatus               0
+MonthlyIncome               0
+MonthlyRate                 0
+NumCompaniesWorked          0
+Over18                      0
+OverTime                    0
+PercentSalaryHike           0
+PerformanceRating           0
+RelationshipSatisfaction    0
+StandardHours               0
+StockOptionLevel            0
+TotalWorkingYears           0
+TrainingTimesLastYear       0
+WorkLifeBalance             0
+YearsAtCompany              0
+YearsInCurrentRole          0
+YearsSinceLastPromotion     0
+YearsWithCurrManager        0
+Attrition                   0
+dtype: int64
+
+Jumlah Missing Value per Kolom:
+
+id                          0
+Age                         0
+BusinessTravel              0
+DailyRate                   0
+Department                  0
+DistanceFromHome            0
+Education                   0
+EducationField              0
+EmployeeCount               0
+EmployeeNumber              0
+EnvironmentSatisfaction     0
+Gender                      0
+HourlyRate                  0
+JobInvolvement              0
+JobLevel                    0
+JobRole                     0
+JobSatisfaction             0
+MaritalStatus               0
+MonthlyIncome               0
+MonthlyRate                 0
+NumCompaniesWorked          0
+Over18                      0
+OverTime                    0
+PercentSalaryHike           0
+PerformanceRating           0
+RelationshipSatisfaction    0
+StandardHours               0
+StockOptionLevel            0
+TotalWorkingYears           0
+TrainingTimesLastYear       0
+WorkLifeBalance             0
+YearsAtCompany              0
+YearsInCurrentRole          0
+YearsSinceLastPromotion     0
+YearsWithCurrManager        0
+dtype: int64
+<img width="1489" height="1768" alt="image" src="https://github.com/user-attachments/assets/79c4dc22-0cb7-4f13-a5f2-261e2e44a7f0" />
+Visualisasi boxplot menunjukkan bahwa sebagian besar fitur numerik, khususnya yang berkaitan dengan finansial dan riwayat kerja, memiliki sebaran yang lebar dan menunjukkan keberadaan outlier yang signifikan: **MonthlyIncome**: Fitur ini menunjukkan sebaran data yang terdistribusi ke atas dengan banyak data berada di luar whisker atas, mengindikasikan keberadaan karyawan berpenghasilan sangat tinggi (manajemen senior/eksekutif).**NumCompaniesWorked**: Fitur ini juga menunjukkan beberapa outlier pada nilai 8 atau 9, mencerminkan karyawan yang memiliki riwayat berpindah-pindah pekerjaan yang sangat sering.
+
+Meskipun terdapat outlier pada fitur-fitur penting seperti MonthlyIncome dan riwayat kerja, outlier tersebut tidak dihapus dari dataset. Hal ini dilakukan untuk menjaga keutuhan informasi dan realitas data bisnis, mengingat data pencilan tersebut mencerminkan kondisi nyata, seperti level kompensasi yang tinggi di tingkat eksekutif.
+Sebagai langkah mitigasi terhadap potensi pengaruh outlier tanpa perlu memodifikasi data, model machine learning yang digunakan adalah model berbasis tree (seperti LightGBM, CatBoost, dan XGBoost)
+
+### 2.4 [Exploratory Data Analysis] - Univariate Analysis
+<img width="1787" height="4455" alt="image" src="https://github.com/user-attachments/assets/897fc457-6667-4006-b0dc-c252d286048b" />
+<img width="1788" height="4455" alt="image" src="https://github.com/user-attachments/assets/03643412-6c43-46ac-b5c3-3e23ae89b0a1" />
+
+
+Distribusi Fitur Numerik 
+- Usia dan Pengalaman Kerja
+Sebagian besar karyawan berusia antara 30–40 tahun, dengan distribusi yang condong ke kanan (right-skewed). Artinya, jumlah karyawan muda lebih banyak dibandingkan yang berusia lanjut. Distribusi TotalWorkingYears dan YearsAtCompany juga menunjukkan pola serupa — mayoritas karyawan memiliki pengalaman kerja di bawah 10 tahun. Hal ini menunjukkan tingkat retensi masih relatif baru dan potensi turnover bisa lebih tinggi di usia muda.
+
+- Gaji dan Pendapatan
+Distribusi MonthlyIncome, IncomePerYearOfExp, dan Income_X_PercentSalaryHike semuanya miring ke kanan, menandakan sebagian besar karyawan berpenghasilan rendah–menengah. Hanya sedikit yang memiliki pendapatan tinggi. Kondisi ini bisa menjadi salah satu faktor risiko attrition karena persepsi ketidakadilan kompensasi atau peluang karier yang terbatas.
+
+- Kepuasan dan Lingkungan Kerja
+Variabel seperti JobSatisfaction, EnvironmentSatisfaction, RelationshipSatisfaction, dan WorkLifeBalance menunjukkan sebaran yang cukup bervariasi. Beberapa fitur memperlihatkan puncak tinggi pada level 3 (cukup puas), menandakan sebagian besar karyawan merasa cukup puas, meski masih ada kelompok kecil yang tidak puas. Hal ini penting diperhatikan karena tingkat kepuasan yang rendah berpotensi memicu turnover.
+
+- Kinerja dan Penghargaan
+Variabel PerformanceRating dan StockOptionLevel terlihat cukup timpang — sebagian besar karyawan mendapat skor tinggi untuk performa, tetapi hanya sedikit yang memperoleh stock option besar. Kesenjangan antara performa dan penghargaan semacam ini bisa berpengaruh terhadap motivasi dan keputusan untuk bertahan.
+
+- Jam Lembur (OverTime)
+Distribusi OverTime_flag dan OverTime menunjukkan mayoritas karyawan jarang melakukan lembur, namun ada kelompok kecil dengan frekuensi lembur tinggi. Karyawan dengan beban lembur tinggi sering kali lebih rentan mengalami stres dan berpotensi keluar.
+
+- Masa Jabatan dan Promosi
+Sebagian besar karyawan baru menjalani 1–5 tahun di posisi saat ini (YearsInCurrentRole) dan belum banyak mendapat promosi (YearsSinceLastPromotion condong ke kiri). Ini menggambarkan adanya stagnasi karier yang bisa mendorong attrition jika tidak dikelola dengan baik.
+
+- Rasio Tenure dan Kepuasan Gabungan
+Fitur turunan seperti AgeTenureRatio, TenureRoleRatio, dan Satisfaction_OverTime menunjukkan pola miring ke kanan, menandakan sebagian besar karyawan baru dengan rasio pengalaman rendah. Ini sesuai dengan kecenderungan bahwa karyawan baru lebih mudah keluar dibandingkan karyawan senior.
+
+
+
+
+
 
 
 

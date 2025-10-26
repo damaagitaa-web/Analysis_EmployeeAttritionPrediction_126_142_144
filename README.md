@@ -489,44 +489,6 @@ YearsWithCurrManager        0
 Attrition                   0
 dtype: int64
 
-Jumlah Missing Value per Kolom:
-
-id                          0
-Age                         0
-BusinessTravel              0
-DailyRate                   0
-Department                  0
-DistanceFromHome            0
-Education                   0
-EducationField              0
-EmployeeCount               0
-EmployeeNumber              0
-EnvironmentSatisfaction     0
-Gender                      0
-HourlyRate                  0
-JobInvolvement              0
-JobLevel                    0
-JobRole                     0
-JobSatisfaction             0
-MaritalStatus               0
-MonthlyIncome               0
-MonthlyRate                 0
-NumCompaniesWorked          0
-Over18                      0
-OverTime                    0
-PercentSalaryHike           0
-PerformanceRating           0
-RelationshipSatisfaction    0
-StandardHours               0
-StockOptionLevel            0
-TotalWorkingYears           0
-TrainingTimesLastYear       0
-WorkLifeBalance             0
-YearsAtCompany              0
-YearsInCurrentRole          0
-YearsSinceLastPromotion     0
-YearsWithCurrManager        0
-dtype: int64
 <img width="1489" height="1768" alt="image" src="https://github.com/user-attachments/assets/79c4dc22-0cb7-4f13-a5f2-261e2e44a7f0" />
 Visualisasi boxplot menunjukkan bahwa sebagian besar fitur numerik, khususnya yang berkaitan dengan finansial dan riwayat kerja, memiliki sebaran yang lebar dan menunjukkan keberadaan outlier yang signifikan: **MonthlyIncome**: Fitur ini menunjukkan sebaran data yang terdistribusi ke atas dengan banyak data berada di luar whisker atas, mengindikasikan keberadaan karyawan berpenghasilan sangat tinggi (manajemen senior/eksekutif).**NumCompaniesWorked**: Fitur ini juga menunjukkan beberapa outlier pada nilai 8 atau 9, mencerminkan karyawan yang memiliki riwayat berpindah-pindah pekerjaan yang sangat sering.
 
